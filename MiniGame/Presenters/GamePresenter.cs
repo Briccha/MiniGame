@@ -9,11 +9,12 @@ namespace WinFormsGame.Presenters
 {
     public class GamePresenter
     {
-        private GameModel model;
-        private GameCanvas view;
-        private InputHandler inputHandler;
+        private readonly GameModel model;
+        private readonly GameCanvas view;
+        private readonly InputHandler inputHandler;
 
         public event EventHandler ScoreChanged;
+        public event EventHandler PlayerStateChanged;
 
         public InputHandler InputHandler => inputHandler;
 
@@ -38,6 +39,7 @@ namespace WinFormsGame.Presenters
         private void SubscribeToModelEvents()
         {
             model.ScoreChanged += (s, e) => ScoreChanged?.Invoke(this, e);
+            model.PlayerStateChanged += (s, e) => PlayerStateChanged?.Invoke(this, e);
         }
 
         private void View_MapClicked(object sender, Point e)
@@ -68,15 +70,8 @@ namespace WinFormsGame.Presenters
             inputHandler.CurrentState = InputState.Idle;
         }
 
-        public void HandleKeyDown(KeyEventArgs e)
-        {
-            inputHandler.HandleKeyDown(e);
-        }
-
-        public void HandleKeyUp(KeyEventArgs e)
-        {
-            inputHandler.HandleKeyUp(e);
-        }
+        public void HandleKeyDown(KeyEventArgs e) => inputHandler.HandleKeyDown(e);
+        public void HandleKeyUp(KeyEventArgs e) => inputHandler.HandleKeyUp(e);
 
         public void Update()
         {
@@ -99,15 +94,15 @@ namespace WinFormsGame.Presenters
             }
         }
 
-        public void ApplySettings(GameSettings settings)
-        {
-            model.ApplySettings(settings);
-        }
+        public void ApplySettings(GameSettings settings) => model.ApplySettings(settings);
+
+        public void ApplyPlayerSettings(string name, int health, int damage, float speed)
+            => model.ApplyPlayerSettings(name, health, damage, speed);
+
         public void UpdateMapBounds(Rectangle bounds)
         {
             model.MapBounds = bounds;
 
-            // Корректируем позицию игрока если он вышел за границы
             float halfSize = PlayerEntity.PlayerSize / 2;
             var pos = model.Player.Position;
             pos.X = Math.Max(halfSize, Math.Min(bounds.Width - halfSize, pos.X));
@@ -116,24 +111,9 @@ namespace WinFormsGame.Presenters
             model.Player.TargetPosition = pos;
         }
 
-        public int GetPlayerBalance()
-        {
-            return model.Player.Balance;
-        }
-
-        public string GetPlayerName()
-        {
-            return model.Player.Name;
-        }
-
-        public void SetPlayerName(string name)
-        {
-            model.Player.Name = name;
-        }
-
-        public PlayerEntity GetPlayer()
-        {
-            return model.Player;
-        }
+        public int GetPlayerBalance() => model.Player.Balance;
+        public string GetPlayerName() => model.Player.Name;
+        public void SetPlayerName(string name) => model.Player.Name = name;
+        public PlayerEntity GetPlayer() => model.Player;
     }
 }
