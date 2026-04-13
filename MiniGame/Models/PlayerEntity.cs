@@ -11,10 +11,13 @@ namespace WinFormsGame.Models
         public PointF Position { get; set; }
         public PointF TargetPosition { get; set; }
         public float Speed { get; set; } = 5f;
+        public int AttackPower { get; set; } = 5;
+        public int MaxHealth { get; set; } = 20;
+        public int Health { get; set; } = 20;
+        public DateTime LastAttackTimeUtc { get; set; } = DateTime.MinValue;
         public int CurrentSkinId { get; set; } = 0;
         public List<int> UnlockedSkins { get; set; } = new List<int> { 0 };
 
-        // Размеры персонажа для коллизий и отрисовки
         public const int PlayerSize = 40;
 
         public bool IsMoving => CalculateDistance(Position, TargetPosition) > 1f;

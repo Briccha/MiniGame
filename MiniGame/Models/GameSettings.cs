@@ -1,52 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-// Models/GameSettings.cs
 namespace WinFormsGame.Models
 {
+    public class DifficultyConfig
+    {
+        public int MaxMonsters { get; set; }
+        public int MonsterHealth { get; set; }
+        public int MonsterDamage { get; set; }
+        public float MonsterSpeed { get; set; }
+        public float MonsterVisionRadius { get; set; }
+        public bool PeacefulMode { get; set; }
+    }
+
     public class GameSettings
     {
         public enum DifficultyLevel
         {
+            Peaceful,
             Easy,
-            Normal,
+            Medium,
             Hard
         }
 
-        public DifficultyLevel Difficulty { get; set; } = DifficultyLevel.Normal;
+        public DifficultyLevel Difficulty { get; set; } = DifficultyLevel.Medium;
+
         public float BaseSpeed { get; set; } = 5f;
         public float BoostMultiplier { get; set; } = 2.0f;
-        public int InitialItemCount { get; set; } = 10;
-        public int MinItemsOnMap { get; set; } = 5;
-        public float CoinSpawnChance { get; set; } = 0.8f;
+        public int MinItemsOnMap { get; set; } = 6;
+        public float CrystalDropChance { get; set; } = 0.18f;
+
+        public Dictionary<DifficultyLevel, DifficultyConfig> DifficultyConfigs { get; } = new Dictionary<DifficultyLevel, DifficultyConfig>
+        {
+            [DifficultyLevel.Peaceful] = new DifficultyConfig { PeacefulMode = true, MaxMonsters = 0, MonsterHealth = 0, MonsterDamage = 0, MonsterSpeed = 0f, MonsterVisionRadius = 0f },
+            [DifficultyLevel.Easy] = new DifficultyConfig { MaxMonsters = 5, MonsterHealth = 10, MonsterDamage = 1, MonsterSpeed = 2.5f, MonsterVisionRadius = 140f },
+            [DifficultyLevel.Medium] = new DifficultyConfig { MaxMonsters = 10, MonsterHealth = 20, MonsterDamage = 3, MonsterSpeed = 3.2f, MonsterVisionRadius = 180f },
+            [DifficultyLevel.Hard] = new DifficultyConfig { MaxMonsters = 15, MonsterHealth = 50, MonsterDamage = 5, MonsterSpeed = 4.0f, MonsterVisionRadius = 220f },
+        };
+
+        public DifficultyConfig CurrentDifficultyConfig => DifficultyConfigs[Difficulty];
 
         public void ApplyDifficulty(DifficultyLevel level)
         {
             Difficulty = level;
-            switch (level)
-            {
-                case DifficultyLevel.Easy:
-                    BaseSpeed = 6f;
-                    InitialItemCount = 12;
-                    MinItemsOnMap = 7;
-                    CoinSpawnChance = 0.9f;
-                    break;
-                case DifficultyLevel.Normal:
-                    BaseSpeed = 5f;
-                    InitialItemCount = 10;
-                    MinItemsOnMap = 5;
-                    CoinSpawnChance = 0.8f;
-                    break;
-                case DifficultyLevel.Hard:
-                    BaseSpeed = 4f;
-                    InitialItemCount = 8;
-                    MinItemsOnMap = 3;
-                    CoinSpawnChance = 0.7f;
-                    break;
-            }
+        }
+
+        public void UpdateDifficultyConfig(DifficultyLevel level, DifficultyConfig config)
+        {
+            DifficultyConfigs[level] = config;
         }
 
         public float GetCurrentSpeed(bool isBoosting)

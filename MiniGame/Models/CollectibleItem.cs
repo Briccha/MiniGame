@@ -38,12 +38,12 @@ namespace WinFormsGame.Models
     {
         private static Random random = new Random();
 
-        public static CollectibleItem CreateRandom(PointF position, float coinChance = 0.8f)
+        public static CollectibleItem CreateRandom(PointF position, float crystalChance = 0.18f)
         {
-            if (random.NextDouble() < coinChance)
-                return new Coin { Position = position };
-            else
+            if (random.NextDouble() < crystalChance)
                 return new Crystal { Position = position };
+
+            return new Coin { Position = position };
         }
     }
 }

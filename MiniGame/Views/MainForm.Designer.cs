@@ -105,7 +105,7 @@ namespace WinFormsGame
             this.lblDifficulty.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblDifficulty.AutoSize = true;
             this.lblDifficulty.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblDifficulty.Location = new System.Drawing.Point(420, 12);
+            this.lblDifficulty.Location = new System.Drawing.Point(450, 12);
             this.lblDifficulty.Name = "lblDifficulty";
             this.lblDifficulty.Size = new System.Drawing.Size(75, 19);
             this.lblDifficulty.TabIndex = 6;
@@ -116,7 +116,7 @@ namespace WinFormsGame
             this.cmbDifficulty.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbDifficulty.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbDifficulty.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cmbDifficulty.Location = new System.Drawing.Point(500, 9);
+            this.cmbDifficulty.Location = new System.Drawing.Point(535, 9);
             this.cmbDifficulty.Name = "cmbDifficulty";
             this.cmbDifficulty.Size = new System.Drawing.Size(100, 25);
             this.cmbDifficulty.TabIndex = 7;
@@ -126,12 +126,15 @@ namespace WinFormsGame
             this.btnHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnHelp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnHelp.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.btnHelp.Location = new System.Drawing.Point(610, 6);
+            this.btnHelp.Location = new System.Drawing.Point(640, 6);
             this.btnHelp.Name = "btnHelp";
             this.btnHelp.Size = new System.Drawing.Size(60, 29);
             this.btnHelp.TabIndex = 8;
             this.btnHelp.Text = "❓";
             this.btnHelp.UseVisualStyleBackColor = true;
+            this.topPanel.Controls.Add(this.lblDifficulty);
+            this.topPanel.Controls.Add(this.cmbDifficulty);
+            this.topPanel.Controls.Add(this.btnHelp);
             // 
             // btnShop
             // 

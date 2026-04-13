@@ -6,16 +6,19 @@ namespace WinFormsGame.Models
 {
     public class GameModel
     {
+        private const double AttackCooldownSeconds = 1.0;
+        private readonly Random random = new Random();
+
         public PlayerEntity Player { get; set; }
         public List<CollectibleItem> Items { get; set; }
+        public List<MonsterEntity> Monsters { get; set; }
         public Rectangle MapBounds { get; set; }
-        public int Score { get; set; }
 
         public event EventHandler PlayerMoved;
         public event EventHandler ItemsChanged;
         public event EventHandler ScoreChanged;
-
-        private Random random = new Random();
+        public event EventHandler MonstersChanged;
+        public event EventHandler PlayerStateChanged;
 
         private GameSettings settings;
 
@@ -25,29 +28,34 @@ namespace WinFormsGame.Models
             this.settings = settings ?? new GameSettings();
             Player = new PlayerEntity();
             Items = new List<CollectibleItem>();
+            Monsters = new List<MonsterEntity>();
             InitializeGame();
         }
 
         private void InitializeGame()
         {
-            Player.Position = new PointF(MapBounds.Width / 2, MapBounds.Height / 2);
+            Player.Position = new PointF(MapBounds.Width / 2f, MapBounds.Height / 2f);
             Player.TargetPosition = Player.Position;
             Player.Speed = settings.BaseSpeed;
+            Player.Health = Player.MaxHealth;
 
-            for (int i = 0; i < settings.InitialItemCount; i++)
+            Items.Clear();
+            for (int i = 0; i < settings.MinItemsOnMap; i++)
             {
                 SpawnRandomItem();
             }
+
+            Monsters.Clear();
+            MaintainMonsterPopulation();
         }
 
-        public void SpawnRandomItem()
+        public void SpawnRandomItem(PointF? fixedPosition = null)
         {
-            PointF position = new PointF(
-                random.Next(20, MapBounds.Width - 20),
-                random.Next(20, MapBounds.Height - 20)
-            );
+            PointF position = fixedPosition ?? new PointF(
+                random.Next(20, Math.Max(21, MapBounds.Width - 20)),
+                random.Next(20, Math.Max(21, MapBounds.Height - 20)));
 
-            var item = CollectibleFactory.CreateRandom(position, settings.CoinSpawnChance);
+            var item = CollectibleFactory.CreateRandom(position, settings.CrystalDropChance);
             Items.Add(item);
             OnItemsChanged();
         }
@@ -57,9 +65,90 @@ namespace WinFormsGame.Models
             var oldPosition = Player.Position;
             Player.UpdatePosition(isBoosting, settings.BaseSpeed);
 
+            UpdateMonsters();
+            ResolveCombat();
+
             if (oldPosition != Player.Position)
             {
                 CheckItemCollisions();
+                OnPlayerMoved();
+            }
+
+            MaintainMonsterPopulation();
+
+            if (settings.CurrentDifficultyConfig.PeacefulMode && Items.Count < settings.MinItemsOnMap)
+            {
+                SpawnRandomItem();
+            }
+        }
+
+        private void UpdateMonsters()
+        {
+            foreach (var monster in Monsters)
+            {
+                var dx = Player.Position.X - monster.Position.X;
+                var dy = Player.Position.Y - monster.Position.Y;
+                var distance = (float)Math.Sqrt(dx * dx + dy * dy);
+
+                if (distance <= monster.VisionRadius)
+                {
+                    monster.TargetPosition = Player.Position;
+                }
+                else if (Distance(monster.Position, monster.TargetPosition) <= 6f)
+                {
+                    monster.PickRandomTarget(MapBounds);
+                }
+
+                monster.MoveTowardTarget(MapBounds);
+            }
+
+            OnMonstersChanged();
+        }
+
+        private void ResolveCombat()
+        {
+            var now = DateTime.UtcNow;
+            var playerRadius = PlayerEntity.PlayerSize / 2f;
+            var monsterRadius = MonsterEntity.MonsterSize / 2f;
+
+            for (int i = Monsters.Count - 1; i >= 0; i--)
+            {
+                var monster = Monsters[i];
+                var dist = Distance(Player.Position, monster.Position);
+                if (dist > playerRadius + monsterRadius)
+                {
+                    continue;
+                }
+
+                if ((now - Player.LastAttackTimeUtc).TotalSeconds >= AttackCooldownSeconds)
+                {
+                    monster.Health -= Player.AttackPower;
+                    Player.LastAttackTimeUtc = now;
+                }
+
+                if (monster.Health > 0 && (now - monster.LastAttackTimeUtc).TotalSeconds >= AttackCooldownSeconds)
+                {
+                    Player.Health -= monster.AttackPower;
+                    monster.LastAttackTimeUtc = now;
+                    OnPlayerStateChanged();
+                }
+
+                if (monster.Health <= 0)
+                {
+                    Player.Health = Math.Min(Player.MaxHealth, Player.Health + monster.MaxHealth);
+                    SpawnRandomItem(monster.Position);
+                    Monsters.RemoveAt(i);
+                    OnMonstersChanged();
+                    OnPlayerStateChanged();
+                }
+            }
+
+            if (Player.Health <= 0)
+            {
+                Player.Health = Player.MaxHealth;
+                Player.Position = new PointF(MapBounds.Width / 2f, MapBounds.Height / 2f);
+                Player.TargetPosition = Player.Position;
+                OnPlayerStateChanged();
                 OnPlayerMoved();
             }
         }
@@ -70,13 +159,11 @@ namespace WinFormsGame.Models
                 Player.Position.X - PlayerEntity.PlayerSize / 2,
                 Player.Position.Y - PlayerEntity.PlayerSize / 2,
                 PlayerEntity.PlayerSize,
-                PlayerEntity.PlayerSize
-            );
+                PlayerEntity.PlayerSize);
 
             for (int i = Items.Count - 1; i >= 0; i--)
             {
-                if (!Items[i].IsCollected &&
-                    playerBounds.IntersectsWith(Items[i].Bounds))
+                if (!Items[i].IsCollected && playerBounds.IntersectsWith(Items[i].Bounds))
                 {
                     Items[i].IsCollected = true;
                     Player.Balance += Items[i].Value;
@@ -92,17 +179,63 @@ namespace WinFormsGame.Models
             }
         }
 
+        private void MaintainMonsterPopulation()
+        {
+            var profile = settings.CurrentDifficultyConfig;
+
+            if (profile.PeacefulMode)
+            {
+                if (Monsters.Count > 0)
+                {
+                    Monsters.Clear();
+                    OnMonstersChanged();
+                }
+                return;
+            }
+
+            while (Monsters.Count < profile.MaxMonsters)
+            {
+                var monster = new MonsterEntity
+                {
+                    Position = RandomMapPoint(),
+                    TargetPosition = RandomMapPoint(),
+                    MaxHealth = profile.MonsterHealth,
+                    Health = profile.MonsterHealth,
+                    AttackPower = profile.MonsterDamage,
+                    Speed = profile.MonsterSpeed,
+                    VisionRadius = profile.MonsterVisionRadius
+                };
+                Monsters.Add(monster);
+                OnMonstersChanged();
+            }
+
+            if (Monsters.Count > profile.MaxMonsters)
+            {
+                Monsters.RemoveRange(profile.MaxMonsters, Monsters.Count - profile.MaxMonsters);
+                OnMonstersChanged();
+            }
+        }
+
         public void ApplySettings(GameSettings newSettings)
         {
             settings = newSettings;
             Player.Speed = settings.BaseSpeed;
+            MaintainMonsterPopulation();
         }
 
-
+        public void ApplyPlayerSettings(string name, int health, int damage, float speed)
+        {
+            Player.Name = name;
+            Player.MaxHealth = Math.Max(1, health);
+            Player.Health = Math.Min(Player.Health, Player.MaxHealth);
+            Player.AttackPower = Math.Max(1, damage);
+            Player.Speed = Math.Max(0.5f, speed);
+            settings.BaseSpeed = Player.Speed;
+            OnPlayerStateChanged();
+        }
 
         public void SetPlayerTarget(PointF target)
         {
-            // Ограничиваем цель границами карты с учетом размера персонажа
             float halfSize = PlayerEntity.PlayerSize / 2;
             target.X = Math.Max(halfSize, Math.Min(MapBounds.Width - halfSize, target.X));
             target.Y = Math.Max(halfSize, Math.Min(MapBounds.Height - halfSize, target.Y));
@@ -113,13 +246,28 @@ namespace WinFormsGame.Models
         {
             PointF newTarget = new PointF(
                 Player.TargetPosition.X + vector.X,
-                Player.TargetPosition.Y + vector.Y
-            );
+                Player.TargetPosition.Y + vector.Y);
             SetPlayerTarget(newTarget);
+        }
+
+        private PointF RandomMapPoint()
+        {
+            return new PointF(
+                random.Next(20, Math.Max(21, MapBounds.Width - 20)),
+                random.Next(20, Math.Max(21, MapBounds.Height - 20)));
+        }
+
+        private static float Distance(PointF p1, PointF p2)
+        {
+            var dx = p1.X - p2.X;
+            var dy = p1.Y - p2.Y;
+            return (float)Math.Sqrt(dx * dx + dy * dy);
         }
 
         protected virtual void OnPlayerMoved() => PlayerMoved?.Invoke(this, EventArgs.Empty);
         protected virtual void OnItemsChanged() => ItemsChanged?.Invoke(this, EventArgs.Empty);
         protected virtual void OnScoreChanged() => ScoreChanged?.Invoke(this, EventArgs.Empty);
+        protected virtual void OnMonstersChanged() => MonstersChanged?.Invoke(this, EventArgs.Empty);
+        protected virtual void OnPlayerStateChanged() => PlayerStateChanged?.Invoke(this, EventArgs.Empty);
     }
 }

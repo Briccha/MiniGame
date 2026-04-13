@@ -8,11 +8,12 @@ using WinFormsGame.Utilities;
 
 namespace WinFormsGame
 {
-    // Views/MainForm.cs (изменения)
     public partial class MainForm : Form
     {
         private GamePresenter presenter;
         private GameSettings settings;
+        private Button btnSettings;
+        private Label lblHpValue;
 
         public MainForm()
         {
@@ -27,12 +28,7 @@ namespace WinFormsGame
         {
             using (var helpForm = new HelpForm())
             {
-                if (helpForm.ShowDialog() == DialogResult.OK)
-                {
-                    // Persisting the "show on startup" setting is omitted because
-                    // the project does not include a Settings file. If you add
-                    // application settings later, restore saving here.
-                }
+                helpForm.ShowDialog();
             }
         }
 
@@ -48,12 +44,70 @@ namespace WinFormsGame
             cmbTheme.SelectedIndex = 0;
             ApplyTheme(AppTheme.Light);
 
-            // Инициализация выпадающего списка сложности
             cmbDifficulty.Items.Clear();
-            cmbDifficulty.Items.AddRange(new object[] { "Легко", "Нормально", "Сложно" });
-            cmbDifficulty.SelectedIndex = 1;
+            cmbDifficulty.Items.AddRange(new object[] { "Мирный", "Легкий", "Средний", "Сложный" });
+            cmbDifficulty.SelectedIndex = (int)GameSettings.DifficultyLevel.Medium;
 
-            UpdateBalance();
+            EnsureExtraControls();
+            UpdateStats();
+        }
+
+        private void EnsureExtraControls()
+        {
+            if (btnSettings == null)
+            {
+                btnSettings = new Button
+                {
+                    Text = "⚙ Настройки",
+                    FlatStyle = FlatStyle.Flat,
+                    Font = new Font("Segoe UI", 10F),
+                    Size = new Size(108, 29),
+                    Location = new Point(326, 6)
+                };
+                btnSettings.Click += BtnSettings_Click;
+                topPanel.Controls.Add(btnSettings);
+            }
+
+            if (lblHpValue == null)
+            {
+                var lblHp = new Label
+                {
+                    Text = "HP:",
+                    Font = new Font("Segoe UI", 12F, FontStyle.Bold),
+                    Location = new Point(118, 11),
+                    AutoSize = true
+                };
+                lblHpValue = new Label
+                {
+                    Font = new Font("Segoe UI", 12F),
+                    Location = new Point(153, 12),
+                    AutoSize = true
+                };
+                topPanel.Controls.Add(lblHp);
+                topPanel.Controls.Add(lblHpValue);
+            }
+        }
+
+        private void BtnSettings_Click(object sender, EventArgs e)
+        {
+            var level = (GameSettings.DifficultyLevel)cmbDifficulty.SelectedIndex;
+            var currentConfig = settings.DifficultyConfigs[level];
+
+            using (var form = new SettingsForm(presenter.GetPlayer(), currentConfig, currentConfig.PeacefulMode))
+            {
+                if (form.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+
+                presenter.ApplyPlayerSettings(form.PlayerName, form.PlayerHp, form.PlayerDamage, form.PlayerSpeed);
+                if (!currentConfig.PeacefulMode)
+                {
+                    settings.UpdateDifficultyConfig(level, form.UpdatedDifficultyConfig);
+                }
+                presenter.ApplySettings(settings);
+                UpdateStats();
+            }
         }
 
         private void CmbDifficulty_SelectedIndexChanged(object sender, EventArgs e)
@@ -61,59 +115,44 @@ namespace WinFormsGame
             if (settings == null) return;
             settings.ApplyDifficulty((GameSettings.DifficultyLevel)cmbDifficulty.SelectedIndex);
             presenter?.ApplySettings(settings);
+            UpdateStats();
         }
 
-        private void BtnHelp_Click(object sender, EventArgs e)
-        {
-            ShowHelpForm();
-        }
+        private void BtnHelp_Click(object sender, EventArgs e) => ShowHelpForm();
 
         private void BindEvents()
         {
-            // События формы
-            this.KeyDown += MainForm_KeyDown;
-            this.KeyUp += MainForm_KeyUp;
-            this.Resize += MainForm_Resize;
+            KeyDown += MainForm_KeyDown;
+            KeyUp += MainForm_KeyUp;
+            Resize += MainForm_Resize;
 
-            // События таймера
             gameTimer.Tick += GameTimer_Tick;
 
-            // События кнопок
             btnShop.Click += BtnShop_Click;
             btnName.Click += BtnName_Click;
             cmbTheme.SelectedIndexChanged += CmbTheme_SelectedIndexChanged;
 
-            // События презентера
-            presenter.ScoreChanged += (s, e) => UpdateBalance();
+            presenter.ScoreChanged += (s, e) => UpdateStats();
+            presenter.PlayerStateChanged += (s, e) => UpdateStats();
         }
 
-        private void MainForm_KeyDown(object sender, KeyEventArgs e)
-        {
-            presenter.HandleKeyDown(e);
-        }
-
-        private void MainForm_KeyUp(object sender, KeyEventArgs e)
-        {
-            presenter.HandleKeyUp(e);
-        }
-
-        private void GameTimer_Tick(object sender, EventArgs e)
-        {
-            presenter.Update();
-        }
+        private void MainForm_KeyDown(object sender, KeyEventArgs e) => presenter.HandleKeyDown(e);
+        private void MainForm_KeyUp(object sender, KeyEventArgs e) => presenter.HandleKeyUp(e);
+        private void GameTimer_Tick(object sender, EventArgs e) => presenter.Update();
 
         private void MainForm_Resize(object sender, EventArgs e)
         {
-            // Обновляем границы карты при изменении размера
-            if (presenter != null)
-            {
-                presenter.UpdateMapBounds(new Rectangle(0, 0, gameCanvas.Width, gameCanvas.Height));
-            }
+            presenter?.UpdateMapBounds(new Rectangle(0, 0, gameCanvas.Width, gameCanvas.Height));
         }
 
-        private void UpdateBalance()
+        private void UpdateStats()
         {
             lblBalanceValue.Text = presenter.GetPlayerBalance().ToString();
+            if (lblHpValue != null)
+            {
+                var player = presenter.GetPlayer();
+                lblHpValue.Text = $"{player.Health}/{player.MaxHealth}";
+            }
         }
 
         private void BtnShop_Click(object sender, EventArgs e)
@@ -122,7 +161,7 @@ namespace WinFormsGame
             {
                 if (shopForm.ShowDialog() == DialogResult.OK)
                 {
-                    UpdateBalance();
+                    UpdateStats();
                     gameCanvas.Invalidate();
                 }
             }
@@ -131,7 +170,6 @@ namespace WinFormsGame
         private void BtnName_Click(object sender, EventArgs e)
         {
             string newName = ShowInputDialog("Введите имя персонажа:", "Изменение имени", presenter.GetPlayerName());
-
             if (!string.IsNullOrWhiteSpace(newName))
             {
                 presenter.SetPlayerName(newName);
@@ -186,9 +224,7 @@ namespace WinFormsGame
         {
             ThemeManager.ApplyTheme(this, theme);
             ThemeManager.ApplyTheme(topPanel, theme);
-            // instructionPanel may be commented out in the designer; apply theme
-            // to it only if it exists in the controls collection.
-            var found = this.Controls.Find("instructionPanel", true);
+            var found = Controls.Find("instructionPanel", true);
             if (found.Length > 0)
             {
                 ThemeManager.ApplyTheme(found[0], theme);
