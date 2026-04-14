@@ -12,8 +12,6 @@ namespace WinFormsGame
     {
         private GamePresenter presenter;
         private GameSettings settings;
-        private Button btnSettings;
-        private Label lblHpValue;
 
         public MainForm()
         {
@@ -48,44 +46,7 @@ namespace WinFormsGame
             cmbDifficulty.Items.AddRange(new object[] { "Мирный", "Легкий", "Средний", "Сложный" });
             cmbDifficulty.SelectedIndex = (int)GameSettings.DifficultyLevel.Medium;
 
-            EnsureExtraControls();
             UpdateStats();
-        }
-
-        private void EnsureExtraControls()
-        {
-            if (btnSettings == null)
-            {
-                btnSettings = new Button
-                {
-                    Text = "⚙ Настройки",
-                    FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Segoe UI", 10F),
-                    Size = new Size(108, 29),
-                    Location = new Point(326, 6)
-                };
-                btnSettings.Click += BtnSettings_Click;
-                topPanel.Controls.Add(btnSettings);
-            }
-
-            if (lblHpValue == null)
-            {
-                var lblHp = new Label
-                {
-                    Text = "HP:",
-                    Font = new Font("Segoe UI", 12F, FontStyle.Bold),
-                    Location = new Point(118, 11),
-                    AutoSize = true
-                };
-                lblHpValue = new Label
-                {
-                    Font = new Font("Segoe UI", 12F),
-                    Location = new Point(153, 12),
-                    AutoSize = true
-                };
-                topPanel.Controls.Add(lblHp);
-                topPanel.Controls.Add(lblHpValue);
-            }
         }
 
         private void BtnSettings_Click(object sender, EventArgs e)
