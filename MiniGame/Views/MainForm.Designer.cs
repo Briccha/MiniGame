@@ -18,6 +18,9 @@ namespace WinFormsGame
         private System.Windows.Forms.ComboBox cmbDifficulty;
         private System.Windows.Forms.Label lblDifficulty;
         private System.Windows.Forms.Button btnHelp;
+        private System.Windows.Forms.Button btnSettings;
+        private System.Windows.Forms.Label lblHp;
+        private System.Windows.Forms.Label lblHpValue;
         private System.Windows.Forms.Label lblMouseInstruction;
         private System.Windows.Forms.Label lblKeyboardInstruction;
         private System.Windows.Forms.Label lblCollectiblesInstruction;
@@ -77,6 +80,9 @@ namespace WinFormsGame
             this.lblDifficulty = new System.Windows.Forms.Label();
             this.cmbDifficulty = new System.Windows.Forms.ComboBox();
             this.btnHelp = new System.Windows.Forms.Button();
+            this.btnSettings = new System.Windows.Forms.Button();
+            this.lblHp = new System.Windows.Forms.Label();
+            this.lblHpValue = new System.Windows.Forms.Label();
             // 
             // lblBalance
             // 
@@ -99,6 +105,26 @@ namespace WinFormsGame
             this.lblBalanceValue.Size = new System.Drawing.Size(19, 21);
             this.lblBalanceValue.TabIndex = 1;
             this.lblBalanceValue.Text = "0";
+            // 
+            // lblHp
+            // 
+            this.lblHp.AutoSize = true;
+            this.lblHp.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.lblHp.Location = new System.Drawing.Point(120, 11);
+            this.lblHp.Name = "lblHp";
+            this.lblHp.Size = new System.Drawing.Size(35, 21);
+            this.lblHp.TabIndex = 2;
+            this.lblHp.Text = "HP:";
+            // 
+            // lblHpValue
+            // 
+            this.lblHpValue.AutoSize = true;
+            this.lblHpValue.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.lblHpValue.Location = new System.Drawing.Point(159, 12);
+            this.lblHpValue.Name = "lblHpValue";
+            this.lblHpValue.Size = new System.Drawing.Size(42, 21);
+            this.lblHpValue.TabIndex = 3;
+            this.lblHpValue.Text = "0/0";
             //
             //lblDifficulty
             //
@@ -128,13 +154,27 @@ namespace WinFormsGame
             this.btnHelp.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnHelp.Location = new System.Drawing.Point(640, 6);
             this.btnHelp.Name = "btnHelp";
-            this.btnHelp.Size = new System.Drawing.Size(60, 29);
+            this.btnHelp.Size = new System.Drawing.Size(32, 29);
             this.btnHelp.TabIndex = 8;
             this.btnHelp.Text = "❓";
             this.btnHelp.UseVisualStyleBackColor = true;
+            // 
+            // btnSettings
+            // 
+            this.btnSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSettings.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.btnSettings.Location = new System.Drawing.Point(326, 6);
+            this.btnSettings.Name = "btnSettings";
+            this.btnSettings.Size = new System.Drawing.Size(108, 29);
+            this.btnSettings.TabIndex = 9;
+            this.btnSettings.Text = "⚙ Настройки";
+            this.btnSettings.UseVisualStyleBackColor = true;
             this.topPanel.Controls.Add(this.lblDifficulty);
             this.topPanel.Controls.Add(this.cmbDifficulty);
             this.topPanel.Controls.Add(this.btnHelp);
+            this.topPanel.Controls.Add(this.btnSettings);
+            this.topPanel.Controls.Add(this.lblHp);
+            this.topPanel.Controls.Add(this.lblHpValue);
             // 
             // btnShop
             // 
@@ -144,7 +184,7 @@ namespace WinFormsGame
             this.btnShop.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnShop.Name = "btnShop";
             this.btnShop.Size = new System.Drawing.Size(104, 29);
-            this.btnShop.TabIndex = 2;
+            this.btnShop.TabIndex = 4;
             this.btnShop.Text = "🛒 Магазин";
             this.btnShop.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnShop.UseVisualStyleBackColor = true;
@@ -157,7 +197,7 @@ namespace WinFormsGame
             this.btnName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnName.Name = "btnName";
             this.btnName.Size = new System.Drawing.Size(74, 29);
-            this.btnName.TabIndex = 3;
+            this.btnName.TabIndex = 5;
             this.btnName.Text = "✏️ Имя";
             this.btnName.UseVisualStyleBackColor = true;
             // 
@@ -175,7 +215,7 @@ namespace WinFormsGame
             this.cmbTheme.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cmbTheme.Name = "cmbTheme";
             this.cmbTheme.Size = new System.Drawing.Size(91, 25);
-            this.cmbTheme.TabIndex = 4;
+            this.cmbTheme.TabIndex = 6;
             // 
             // lblTheme
             // 
@@ -186,7 +226,7 @@ namespace WinFormsGame
             this.lblTheme.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblTheme.Name = "lblTheme";
             this.lblTheme.Size = new System.Drawing.Size(43, 19);
-            this.lblTheme.TabIndex = 5;
+            this.lblTheme.TabIndex = 7;
             this.lblTheme.Text = "Тема:";
             //// 
             //// instructionPanel
@@ -277,6 +317,7 @@ namespace WinFormsGame
 
             this.cmbDifficulty.SelectedIndexChanged += new System.EventHandler(this.CmbDifficulty_SelectedIndexChanged);
             this.btnHelp.Click += new System.EventHandler(this.BtnHelp_Click);
+            this.btnSettings.Click += new System.EventHandler(this.BtnSettings_Click);
         }
     }
 }
