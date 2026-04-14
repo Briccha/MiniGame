@@ -49,6 +49,7 @@
     <Compile Include="Models\CollectibleItem.cs" />
     <Compile Include="Models\GameModel.cs" />
     <Compile Include="Models\GameSettings.cs" />
+    <Compile Include="Models\MonsterEntity.cs" />
     <Compile Include="Models\PlayerEntity.cs" />
     <Compile Include="Models\SkinData.cs" />
     <Compile Include="Presenters\GamePresenter.cs" />
@@ -75,6 +76,9 @@
     </Compile>
     <Compile Include="Views\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SettingsForm.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Views\ShopForm.cs">
       <SubType>Form</SubType>
