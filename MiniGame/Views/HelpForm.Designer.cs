@@ -115,7 +115,7 @@ namespace WinFormsGame.Views
             this.lblMouseInfo.Name = "lblMouseInfo";
             this.lblMouseInfo.Size = new System.Drawing.Size(467, 35);
             this.lblMouseInfo.TabIndex = 0;
-            this.lblMouseInfo.Text = "• Клик ПКМ по карте — движение к указанной точке\n• Зажать ПКМ на персонаже — перетаскивание";
+            this.lblMouseInfo.Text = "• Клик ЛКМ по карте — движение к указанной точке\n• Зажать ПКМ на персонаже — перетаскивание";
             // 
             // grpKeyboard
             // 

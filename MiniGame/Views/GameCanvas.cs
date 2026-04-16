@@ -48,7 +48,18 @@ namespace WinFormsGame.Views
 
         private void GameCanvas_MouseDown(object sender, MouseEventArgs e)
         {
-            if (gameModel == null || e.Button != MouseButtons.Left)
+            if (gameModel == null)
+            {
+                return;
+            }
+
+            if (e.Button == MouseButtons.Left)
+            {
+                MapClicked?.Invoke(this, e.Location);
+                return;
+            }
+
+            if (e.Button != MouseButtons.Right)
             {
                 return;
             }
@@ -69,8 +80,6 @@ namespace WinFormsGame.Views
                 PlayerDragStarted?.Invoke(this, e.Location);
                 return;
             }
-
-            MapClicked?.Invoke(this, e.Location);
         }
 
         private void GameCanvas_MouseMove(object sender, MouseEventArgs e)
@@ -84,7 +93,7 @@ namespace WinFormsGame.Views
 
         private void GameCanvas_MouseUp(object sender, MouseEventArgs e)
         {
-            if (isDragging && e.Button == MouseButtons.Left)
+            if (isDragging && e.Button == MouseButtons.Right)
             {
                 isDragging = false;
                 if (inputHandler != null)
