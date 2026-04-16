@@ -241,7 +241,7 @@ namespace WinFormsGame
             this.lblMouseInstruction.Name = "lblMouseInstruction";
             this.lblMouseInstruction.Size = new System.Drawing.Size(172, 98);
             this.lblMouseInstruction.TabIndex = 1;
-            this.lblMouseInstruction.Text = "🖱️ Мышь:\n• Клик ЛКМ - движение к точке\n• Зажать ЛКМ на персонаже - перенос";
+            this.lblMouseInstruction.Text = "🖱️ Мышь:\n• Клик ЛКМ - движение к точке\n• Зажать ПКМ на персонаже - перенос";
             // 
             // lblKeyboardInstruction
             // 
