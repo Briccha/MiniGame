@@ -168,7 +168,6 @@
             // 
             // btnSave
             // 
-            this.btnSave.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSave.Location = new System.Drawing.Point(125, 400);
             this.btnSave.Name = "btnSave";
@@ -176,6 +175,7 @@
             this.btnSave.TabIndex = 11;
             this.btnSave.Text = "Сохранить";
             this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.BtnSave_Click);
             // 
             // txtName
             // 
@@ -187,27 +187,83 @@
             // numPlayerHp
             // 
             this.numPlayerHp.Location = new System.Drawing.Point(170, 85);
+            this.numPlayerHp.Maximum = new decimal(new int[] {
+            999,
+            0,
+            0,
+            0});
+            this.numPlayerHp.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.numPlayerHp.Name = "numPlayerHp";
             this.numPlayerHp.Size = new System.Drawing.Size(160, 22);
             this.numPlayerHp.TabIndex = 13;
+            this.numPlayerHp.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // numPlayerDamage
             // 
             this.numPlayerDamage.Location = new System.Drawing.Point(170, 119);
+            this.numPlayerDamage.Maximum = new decimal(new int[] {
+            99,
+            0,
+            0,
+            0});
+            this.numPlayerDamage.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.numPlayerDamage.Name = "numPlayerDamage";
             this.numPlayerDamage.Size = new System.Drawing.Size(160, 22);
             this.numPlayerDamage.TabIndex = 14;
+            this.numPlayerDamage.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // numPlayerSpeed
             // 
+            this.numPlayerSpeed.DecimalPlaces = 1;
+            this.numPlayerSpeed.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
             this.numPlayerSpeed.Location = new System.Drawing.Point(170, 153);
+            this.numPlayerSpeed.Maximum = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            this.numPlayerSpeed.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.numPlayerSpeed.Name = "numPlayerSpeed";
             this.numPlayerSpeed.Size = new System.Drawing.Size(160, 22);
             this.numPlayerSpeed.TabIndex = 15;
+            this.numPlayerSpeed.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // numMonsterCount
             // 
             this.numMonsterCount.Location = new System.Drawing.Point(170, 231);
+            this.numMonsterCount.Maximum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
             this.numMonsterCount.Name = "numMonsterCount";
             this.numMonsterCount.Size = new System.Drawing.Size(160, 22);
             this.numMonsterCount.TabIndex = 16;
@@ -215,30 +271,96 @@
             // numMonsterHp
             // 
             this.numMonsterHp.Location = new System.Drawing.Point(170, 265);
+            this.numMonsterHp.Maximum = new decimal(new int[] {
+            999,
+            0,
+            0,
+            0});
+            this.numMonsterHp.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.numMonsterHp.Name = "numMonsterHp";
             this.numMonsterHp.Size = new System.Drawing.Size(160, 22);
             this.numMonsterHp.TabIndex = 17;
+            this.numMonsterHp.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // numMonsterDamage
             // 
             this.numMonsterDamage.Location = new System.Drawing.Point(170, 299);
+            this.numMonsterDamage.Maximum = new decimal(new int[] {
+            99,
+            0,
+            0,
+            0});
+            this.numMonsterDamage.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.numMonsterDamage.Name = "numMonsterDamage";
             this.numMonsterDamage.Size = new System.Drawing.Size(160, 22);
             this.numMonsterDamage.TabIndex = 18;
+            this.numMonsterDamage.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // numMonsterSpeed
             // 
+            this.numMonsterSpeed.DecimalPlaces = 1;
+            this.numMonsterSpeed.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
             this.numMonsterSpeed.Location = new System.Drawing.Point(170, 333);
+            this.numMonsterSpeed.Maximum = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            this.numMonsterSpeed.Minimum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            65536});
             this.numMonsterSpeed.Name = "numMonsterSpeed";
             this.numMonsterSpeed.Size = new System.Drawing.Size(160, 22);
             this.numMonsterSpeed.TabIndex = 19;
+            this.numMonsterSpeed.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            65536});
             // 
             // numMonsterVision
             // 
             this.numMonsterVision.Location = new System.Drawing.Point(170, 367);
+            this.numMonsterVision.Maximum = new decimal(new int[] {
+            600,
+            0,
+            0,
+            0});
+            this.numMonsterVision.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
             this.numMonsterVision.Name = "numMonsterVision";
             this.numMonsterVision.Size = new System.Drawing.Size(160, 22);
             this.numMonsterVision.TabIndex = 20;
+            this.numMonsterVision.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
             // 
             // SettingsForm
             // 
@@ -273,6 +395,7 @@
             this.Name = "SettingsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Настройки игры";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingsForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.numPlayerHp)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numPlayerDamage)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numPlayerSpeed)).EndInit();

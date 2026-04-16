@@ -43,6 +43,7 @@
             this.lstSkins.Name = "lstSkins";
             this.lstSkins.Size = new System.Drawing.Size(151, 244);
             this.lstSkins.TabIndex = 0;
+            this.lstSkins.SelectedIndexChanged += new System.EventHandler(this.LstSkins_SelectedIndexChanged);
             // 
             // previewPanel
             // 
@@ -86,6 +87,7 @@
             this.btnBuy.TabIndex = 4;
             this.btnBuy.Text = "Купить";
             this.btnBuy.UseVisualStyleBackColor = true;
+            this.btnBuy.Click += new System.EventHandler(this.BtnBuy_Click);
             // 
             // btnSelect
             // 
@@ -98,6 +100,7 @@
             this.btnSelect.TabIndex = 5;
             this.btnSelect.Text = "Выбрать";
             this.btnSelect.UseVisualStyleBackColor = true;
+            this.btnSelect.Click += new System.EventHandler(this.BtnSelect_Click);
             // 
             // btnClose
             // 
@@ -110,6 +113,7 @@
             this.btnClose.TabIndex = 6;
             this.btnClose.Text = "Закрыть";
             this.btnClose.UseVisualStyleBackColor = true;
+            this.btnClose.Click += new System.EventHandler(this.BtnClose_Click);
             // 
             // lblCurrentBalance
             // 

@@ -15,12 +15,15 @@ namespace WinFormsGame.Models
         public int MaxHealth { get; set; } = 20;
         public int Health { get; set; } = 20;
         public DateTime LastAttackTimeUtc { get; set; } = DateTime.MinValue;
+        public DateTime HitFlashUntilUtc { get; set; } = DateTime.MinValue;
+        public Color HitFlashColor { get; set; } = Color.Empty;
         public int CurrentSkinId { get; set; } = 0;
         public List<int> UnlockedSkins { get; set; } = new List<int> { 0 };
 
         public const int PlayerSize = 40;
 
         public bool IsMoving => CalculateDistance(Position, TargetPosition) > 1f;
+        public bool IsHitFlashActive => DateTime.UtcNow <= HitFlashUntilUtc;
 
         private float CalculateDistance(PointF p1, PointF p2)
         {

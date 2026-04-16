@@ -64,6 +64,7 @@ namespace WinFormsGame
             // 
             this.gameTimer.Enabled = true;
             this.gameTimer.Interval = 16;
+            this.gameTimer.Tick += new System.EventHandler(this.GameTimer_Tick);
             // 
             // topPanel
             // 
@@ -197,6 +198,7 @@ namespace WinFormsGame
             this.btnShop.Text = "🛒 Магазин";
             this.btnShop.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnShop.UseVisualStyleBackColor = true;
+            this.btnShop.Click += new System.EventHandler(this.BtnShop_Click);
             // 
             // btnName
             // 
@@ -209,6 +211,7 @@ namespace WinFormsGame
             this.btnName.TabIndex = 5;
             this.btnName.Text = "✏️ Имя";
             this.btnName.UseVisualStyleBackColor = true;
+            this.btnName.Click += new System.EventHandler(this.BtnName_Click);
             // 
             // cmbTheme
             // 
@@ -225,6 +228,7 @@ namespace WinFormsGame
             this.cmbTheme.Name = "cmbTheme";
             this.cmbTheme.Size = new System.Drawing.Size(91, 25);
             this.cmbTheme.TabIndex = 6;
+            this.cmbTheme.SelectedIndexChanged += new System.EventHandler(this.CmbTheme_SelectedIndexChanged);
             // 
             // lblTheme
             // 

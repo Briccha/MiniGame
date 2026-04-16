@@ -6,6 +6,13 @@ namespace WinFormsGame.Views
 {
     public partial class SettingsForm : Form
     {
+        private readonly string initialPlayerName;
+        private readonly int initialPlayerHp;
+        private readonly int initialPlayerDamage;
+        private readonly float initialPlayerSpeed;
+        private readonly DifficultyConfig initialConfig;
+        private bool settingsApplied;
+
         public string PlayerName => txtName.Text.Trim();
         public int PlayerHp => (int)numPlayerHp.Value;
         public int PlayerDamage => (int)numPlayerDamage.Value;
@@ -24,18 +31,31 @@ namespace WinFormsGame.Views
         public SettingsForm(PlayerEntity player, DifficultyConfig config, bool isPeaceful)
         {
             InitializeComponent();
+            initialConfig = new DifficultyConfig
+            {
+                MaxMonsters = config.MaxMonsters,
+                MonsterHealth = config.MonsterHealth,
+                MonsterDamage = config.MonsterDamage,
+                MonsterSpeed = config.MonsterSpeed,
+                MonsterVisionRadius = config.MonsterVisionRadius,
+                PeacefulMode = config.PeacefulMode
+            };
 
             txtName.Text = player.Name;
+            initialPlayerName = player.Name;
 
-            numPlayerHp.Minimum = 1; numPlayerHp.Maximum = 999; numPlayerHp.Value = player.MaxHealth;
-            numPlayerDamage.Minimum = 1; numPlayerDamage.Maximum = 99; numPlayerDamage.Value = player.AttackPower;
-            numPlayerSpeed.DecimalPlaces = 1; numPlayerSpeed.Increment = 0.1M; numPlayerSpeed.Minimum = 1; numPlayerSpeed.Maximum = 20; numPlayerSpeed.Value = (decimal)player.Speed;
+            numPlayerHp.Value = player.MaxHealth;
+            initialPlayerHp = player.MaxHealth;
+            numPlayerDamage.Value = player.AttackPower;
+            initialPlayerDamage = player.AttackPower;
+            numPlayerSpeed.Value = (decimal)player.Speed;
+            initialPlayerSpeed = player.Speed;
 
-            numMonsterCount.Minimum = 0; numMonsterCount.Maximum = 100; numMonsterCount.Value = config.MaxMonsters;
-            numMonsterHp.Minimum = 1; numMonsterHp.Maximum = 999; numMonsterHp.Value = Math.Max(1, config.MonsterHealth);
-            numMonsterDamage.Minimum = 1; numMonsterDamage.Maximum = 99; numMonsterDamage.Value = Math.Max(1, config.MonsterDamage);
-            numMonsterSpeed.DecimalPlaces = 1; numMonsterSpeed.Increment = 0.1M; numMonsterSpeed.Minimum = 0.5M; numMonsterSpeed.Maximum = 20; numMonsterSpeed.Value = Math.Max(0.5M, (decimal)config.MonsterSpeed);
-            numMonsterVision.Minimum = 10; numMonsterVision.Maximum = 600; numMonsterVision.Value = Math.Max(10, (decimal)config.MonsterVisionRadius);
+            numMonsterCount.Value = config.MaxMonsters;
+            numMonsterHp.Value = Math.Max(1, config.MonsterHealth);
+            numMonsterDamage.Value = Math.Max(1, config.MonsterDamage);
+            numMonsterSpeed.Value = Math.Max(0.5M, (decimal)config.MonsterSpeed);
+            numMonsterVision.Value = Math.Max(10, (decimal)config.MonsterVisionRadius);
 
             if (isPeaceful)
             {
@@ -46,6 +66,51 @@ namespace WinFormsGame.Views
                 numMonsterSpeed.Enabled = false;
                 numMonsterVision.Enabled = false;
             }
+        }
+
+        private void BtnSave_Click(object sender, EventArgs e)
+        {
+            settingsApplied = true;
+            DialogResult = DialogResult.OK;
+            Close();
+        }
+
+        private void SettingsForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (settingsApplied || !HasPendingChanges())
+            {
+                return;
+            }
+
+            var result = MessageBox.Show(
+                "Есть несохраненные изменения. Закрыть без применения?",
+                "Подтверждение",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes)
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private bool HasPendingChanges()
+        {
+            if (!string.Equals(PlayerName, initialPlayerName, StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            if (PlayerHp != initialPlayerHp || PlayerDamage != initialPlayerDamage || Math.Abs(PlayerSpeed - initialPlayerSpeed) > 0.001f)
+            {
+                return true;
+            }
+
+            return UpdatedDifficultyConfig.MaxMonsters != initialConfig.MaxMonsters
+                   || UpdatedDifficultyConfig.MonsterHealth != initialConfig.MonsterHealth
+                   || UpdatedDifficultyConfig.MonsterDamage != initialConfig.MonsterDamage
+                   || Math.Abs(UpdatedDifficultyConfig.MonsterSpeed - initialConfig.MonsterSpeed) > 0.001f
+                   || Math.Abs(UpdatedDifficultyConfig.MonsterVisionRadius - initialConfig.MonsterVisionRadius) > 0.001f;
         }
     }
 }

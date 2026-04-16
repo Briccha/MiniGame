@@ -17,8 +17,11 @@ namespace WinFormsGame.Models
         public float Speed { get; set; }
         public float VisionRadius { get; set; }
         public DateTime LastAttackTimeUtc { get; set; } = DateTime.MinValue;
+        public DateTime HitFlashUntilUtc { get; set; } = DateTime.MinValue;
+        public Color HitFlashColor { get; set; } = Color.Empty;
 
         public bool IsAlive => Health > 0;
+        public bool IsHitFlashActive => DateTime.UtcNow <= HitFlashUntilUtc;
 
         public RectangleF Bounds => new RectangleF(
             Position.X - MonsterSize / 2f,

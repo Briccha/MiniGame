@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using WinFormsGame.Utilities;
 
 namespace WinFormsGame.Models
 {
     public class GameModel
     {
         private const double AttackCooldownSeconds = 1.0;
+        private const double HitFlashDurationSeconds = 0.20;
         private readonly Random random = new Random();
 
         public PlayerEntity Player { get; set; }
@@ -66,6 +68,7 @@ namespace WinFormsGame.Models
             Player.UpdatePosition(isBoosting, settings.BaseSpeed);
 
             UpdateMonsters();
+            ResolveEntityCollisions();
             ResolveCombat();
 
             if (oldPosition != Player.Position)
@@ -124,12 +127,18 @@ namespace WinFormsGame.Models
                 {
                     monster.Health -= Player.AttackPower;
                     Player.LastAttackTimeUtc = now;
+                    RegisterHitFx(Player, Color.DodgerBlue);
+                    RegisterHitFx(monster, Color.IndianRed);
+                    SoundEffectPlayer.PlayHitSound();
                 }
 
                 if (monster.Health > 0 && (now - monster.LastAttackTimeUtc).TotalSeconds >= AttackCooldownSeconds)
                 {
                     Player.Health -= monster.AttackPower;
                     monster.LastAttackTimeUtc = now;
+                    RegisterHitFx(Player, Color.DodgerBlue);
+                    RegisterHitFx(monster, Color.IndianRed);
+                    SoundEffectPlayer.PlayHitSound();
                     OnPlayerStateChanged();
                 }
 
@@ -262,6 +271,99 @@ namespace WinFormsGame.Models
             var dx = p1.X - p2.X;
             var dy = p1.Y - p2.Y;
             return (float)Math.Sqrt(dx * dx + dy * dy);
+        }
+
+        private void ResolveEntityCollisions()
+        {
+            ResolvePlayerMonsterOverlaps();
+            ResolveMonsterMonsterOverlaps();
+            OnMonstersChanged();
+            OnPlayerMoved();
+        }
+
+        private void ResolvePlayerMonsterOverlaps()
+        {
+            var playerRadius = PlayerEntity.PlayerSize / 2f;
+            var monsterRadius = MonsterEntity.MonsterSize / 2f;
+            var minDistance = playerRadius + monsterRadius;
+
+            foreach (var monster in Monsters)
+            {
+                var playerPosition = Player.Position;
+                var monsterPosition = monster.Position;
+
+                PushEntitiesApart(ref playerPosition, playerRadius, ref monsterPosition, monsterRadius, minDistance);
+
+                Player.Position = playerPosition;
+                Player.TargetPosition = playerPosition;
+                monster.Position = monsterPosition;
+            }
+        }
+
+        private void ResolveMonsterMonsterOverlaps()
+        {
+            var monsterRadius = MonsterEntity.MonsterSize / 2f;
+            var minDistance = monsterRadius * 2f;
+
+            for (int i = 0; i < Monsters.Count; i++)
+            {
+                for (int j = i + 1; j < Monsters.Count; j++)
+                {
+                    var first = Monsters[i];
+                    var second = Monsters[j];
+
+                    var firstPos = first.Position;
+                    var secondPos = second.Position;
+                    PushEntitiesApart(ref firstPos, monsterRadius, ref secondPos, monsterRadius, minDistance);
+                    first.Position = firstPos;
+                    second.Position = secondPos;
+                }
+            }
+        }
+
+        private void PushEntitiesApart(ref PointF first, float firstRadius, ref PointF second, float secondRadius, float minDistance)
+        {
+            var dx = second.X - first.X;
+            var dy = second.Y - first.Y;
+            var distance = (float)Math.Sqrt(dx * dx + dy * dy);
+
+            if (distance <= 0.001f)
+            {
+                dx = (float)(random.NextDouble() - 0.5);
+                dy = (float)(random.NextDouble() - 0.5);
+                distance = (float)Math.Sqrt(dx * dx + dy * dy);
+            }
+
+            if (distance >= minDistance || distance <= 0.001f)
+            {
+                return;
+            }
+
+            var overlap = minDistance - distance;
+            var nx = dx / distance;
+            var ny = dy / distance;
+
+            first = ClampByRadius(new PointF(first.X - nx * overlap / 2f, first.Y - ny * overlap / 2f), firstRadius);
+            second = ClampByRadius(new PointF(second.X + nx * overlap / 2f, second.Y + ny * overlap / 2f), secondRadius);
+        }
+
+        private PointF ClampByRadius(PointF point, float radius)
+        {
+            point.X = Math.Max(radius, Math.Min(MapBounds.Width - radius, point.X));
+            point.Y = Math.Max(radius, Math.Min(MapBounds.Height - radius, point.Y));
+            return point;
+        }
+
+        private void RegisterHitFx(PlayerEntity player, Color baseColor)
+        {
+            player.HitFlashColor = ColorHelper.GetHitFlashColor(baseColor, Color.FromArgb(240, 240, 240));
+            player.HitFlashUntilUtc = DateTime.UtcNow.AddSeconds(HitFlashDurationSeconds);
+        }
+
+        private void RegisterHitFx(MonsterEntity monster, Color baseColor)
+        {
+            monster.HitFlashColor = ColorHelper.GetHitFlashColor(baseColor, Color.FromArgb(240, 240, 240));
+            monster.HitFlashUntilUtc = DateTime.UtcNow.AddSeconds(HitFlashDurationSeconds);
         }
 
         protected virtual void OnPlayerMoved() => PlayerMoved?.Invoke(this, EventArgs.Empty);
