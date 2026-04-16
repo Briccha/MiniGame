@@ -12,22 +12,27 @@ namespace WinFormsGame
     {
         private GamePresenter presenter;
         private GameSettings settings;
+        private bool isUiOverlayOpen;
+        private readonly ToolTip buttonToolTip = new ToolTip();
 
         public MainForm()
         {
             InitializeComponent();
             settings = new GameSettings();
             InitializeGame();
+            ConfigureTooltips();
             BindEvents();
             ShowHelpForm();
         }
 
         private void ShowHelpForm()
         {
+            isUiOverlayOpen = true;
             using (var helpForm = new HelpForm())
             {
                 helpForm.ShowDialog();
             }
+            isUiOverlayOpen = false;
         }
 
         private void InitializeGame()
@@ -54,10 +59,12 @@ namespace WinFormsGame
             var level = (GameSettings.DifficultyLevel)cmbDifficulty.SelectedIndex;
             var currentConfig = settings.DifficultyConfigs[level];
 
+            isUiOverlayOpen = true;
             using (var form = new SettingsForm(presenter.GetPlayer(), currentConfig, currentConfig.PeacefulMode))
             {
                 if (form.ShowDialog() != DialogResult.OK)
                 {
+                    isUiOverlayOpen = false;
                     return;
                 }
 
@@ -69,6 +76,7 @@ namespace WinFormsGame
                 presenter.ApplySettings(settings);
                 UpdateStats();
             }
+            isUiOverlayOpen = false;
         }
 
         private void CmbDifficulty_SelectedIndexChanged(object sender, EventArgs e)
@@ -87,19 +95,20 @@ namespace WinFormsGame
             KeyUp += MainForm_KeyUp;
             Resize += MainForm_Resize;
 
-            gameTimer.Tick += GameTimer_Tick;
-
-            btnShop.Click += BtnShop_Click;
-            btnName.Click += BtnName_Click;
-            cmbTheme.SelectedIndexChanged += CmbTheme_SelectedIndexChanged;
-
             presenter.ScoreChanged += (s, e) => UpdateStats();
             presenter.PlayerStateChanged += (s, e) => UpdateStats();
         }
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e) => presenter.HandleKeyDown(e);
         private void MainForm_KeyUp(object sender, KeyEventArgs e) => presenter.HandleKeyUp(e);
-        private void GameTimer_Tick(object sender, EventArgs e) => presenter.Update();
+        private void GameTimer_Tick(object sender, EventArgs e)
+        {
+            if (isUiOverlayOpen || cmbTheme.DroppedDown || cmbDifficulty.DroppedDown)
+            {
+                return;
+            }
+            presenter.Update();
+        }
 
         private void MainForm_Resize(object sender, EventArgs e)
         {
@@ -118,6 +127,7 @@ namespace WinFormsGame
 
         private void BtnShop_Click(object sender, EventArgs e)
         {
+            isUiOverlayOpen = true;
             using (var shopForm = new ShopForm(presenter.GetPlayer()))
             {
                 if (shopForm.ShowDialog() == DialogResult.OK)
@@ -126,11 +136,14 @@ namespace WinFormsGame
                     gameCanvas.Invalidate();
                 }
             }
+            isUiOverlayOpen = false;
         }
 
         private void BtnName_Click(object sender, EventArgs e)
         {
+            isUiOverlayOpen = true;
             string newName = ShowInputDialog("Введите имя персонажа:", "Изменение имени", presenter.GetPlayerName());
+            isUiOverlayOpen = false;
             if (!string.IsNullOrWhiteSpace(newName))
             {
                 presenter.SetPlayerName(newName);
@@ -179,6 +192,14 @@ namespace WinFormsGame
         {
             AppTheme theme = (AppTheme)cmbTheme.SelectedIndex;
             ApplyTheme(theme);
+        }
+
+        private void ConfigureTooltips()
+        {
+            buttonToolTip.SetToolTip(btnShop, "Открыть магазин скинов");
+            buttonToolTip.SetToolTip(btnName, "Изменить имя героя");
+            buttonToolTip.SetToolTip(btnSettings, "Открыть настройки сложности и персонажа");
+            buttonToolTip.SetToolTip(btnHelp, "Показать справку");
         }
 
         private void ApplyTheme(AppTheme theme)

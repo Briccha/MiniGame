@@ -16,7 +16,6 @@ namespace WinFormsGame.Views
             InitializeComponent();
             this.player = player;
             LoadSkins();
-            BindEvents();
             UpdateBalance();
         }
 
@@ -30,14 +29,6 @@ namespace WinFormsGame.Views
                 lstSkins.Items.Add($"{status} {skin.Name}{price}");
             }
             lstSkins.Tag = skins;
-        }
-
-        private void BindEvents()
-        {
-            lstSkins.SelectedIndexChanged += LstSkins_SelectedIndexChanged;
-            btnBuy.Click += BtnBuy_Click;
-            btnSelect.Click += BtnSelect_Click;
-            btnClose.Click += (s, e) => this.Close();
         }
 
         private void LstSkins_SelectedIndexChanged(object sender, EventArgs e)
@@ -122,6 +113,11 @@ namespace WinFormsGame.Views
             {
                 g.FillEllipse(brush, x + size / 4, y + size / 4, size / 2, size / 2);
             }
+        }
+
+        private void BtnClose_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }
