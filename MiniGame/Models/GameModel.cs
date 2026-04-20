@@ -295,7 +295,6 @@ namespace WinFormsGame.Models
                 PushEntitiesApart(ref playerPosition, playerRadius, ref monsterPosition, monsterRadius, minDistance);
 
                 Player.Position = playerPosition;
-                Player.TargetPosition = playerPosition;
                 monster.Position = monsterPosition;
             }
         }

@@ -193,7 +193,7 @@ namespace WinFormsGame
             this.btnHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnHelp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnHelp.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.btnHelp.Location = new System.Drawing.Point(899, 8);
+            this.btnHelp.Location = new System.Drawing.Point(899, 7);
             this.btnHelp.Name = "btnHelp";
             this.btnHelp.Size = new System.Drawing.Size(32, 29);
             this.btnHelp.TabIndex = 8;
@@ -203,6 +203,7 @@ namespace WinFormsGame
             // 
             // btnSettings
             // 
+            this.btnSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSettings.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnSettings.Location = new System.Drawing.Point(937, 6);
@@ -290,6 +291,7 @@ namespace WinFormsGame
             this.topPanel.ResumeLayout(false);
             this.topPanel.PerformLayout();
             this.ResumeLayout(false);
+
         }
     }
 }
