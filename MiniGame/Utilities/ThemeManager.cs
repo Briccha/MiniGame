@@ -14,6 +14,16 @@ namespace WinFormsGame.Utilities
 
     public class ThemeManager
     {
+        public struct ThemePalette
+        {
+            public Color BackColor;
+            public Color ForeColor;
+            public Color AccentColor;
+            public Color SurfaceColor;
+            public Color CanvasGridColor;
+            public Color ContrastColor;
+        }
+
         public static bool IsSystemDarkTheme()
         {
             try
@@ -33,25 +43,37 @@ namespace WinFormsGame.Utilities
 
         public static void ApplyTheme(Control control, AppTheme theme)
         {
-            Color backColor, foreColor, accentColor;
+            var palette = GetPalette(theme);
+            ApplyThemeToControl(control, palette.BackColor, palette.ForeColor, palette.AccentColor);
+        }
 
+        public static ThemePalette GetPalette(AppTheme theme)
+        {
             bool useDark = theme == AppTheme.Dark ||
-                          (theme == AppTheme.System && IsSystemDarkTheme());
+                           (theme == AppTheme.System && IsSystemDarkTheme());
 
             if (useDark)
             {
-                backColor = Color.FromArgb(32, 32, 32);
-                foreColor = Color.White;
-                accentColor = Color.FromArgb(64, 64, 64);
-            }
-            else
-            {
-                backColor = Color.WhiteSmoke;
-                foreColor = Color.Black;
-                accentColor = Color.LightGray;
+                return new ThemePalette
+                {
+                    BackColor = Color.FromArgb(24, 28, 34),
+                    ForeColor = Color.FromArgb(239, 242, 246),
+                    AccentColor = Color.FromArgb(56, 68, 82),
+                    SurfaceColor = Color.FromArgb(31, 37, 45),
+                    CanvasGridColor = Color.FromArgb(72, 82, 94),
+                    ContrastColor = Color.FromArgb(255, 214, 102)
+                };
             }
 
-            ApplyThemeToControl(control, backColor, foreColor, accentColor);
+            return new ThemePalette
+            {
+                BackColor = Color.FromArgb(242, 245, 250),
+                ForeColor = Color.FromArgb(28, 31, 36),
+                AccentColor = Color.FromArgb(214, 224, 238),
+                SurfaceColor = Color.White,
+                CanvasGridColor = Color.FromArgb(188, 202, 221),
+                ContrastColor = Color.FromArgb(28, 90, 210)
+            };
         }
 
         private static void ApplyThemeToControl(Control control, Color backColor,

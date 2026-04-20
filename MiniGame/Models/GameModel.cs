@@ -10,6 +10,7 @@ namespace WinFormsGame.Models
         private const double AttackCooldownSeconds = 1.0;
         private const double HitFlashDurationSeconds = 0.20;
         private readonly Random random = new Random();
+        private Color uiSurfaceColor = Color.FromArgb(242, 245, 250);
 
         public PlayerEntity Player { get; set; }
         public List<CollectibleItem> Items { get; set; }
@@ -243,6 +244,11 @@ namespace WinFormsGame.Models
             OnPlayerStateChanged();
         }
 
+        public void SetUiSurfaceColor(Color color)
+        {
+            uiSurfaceColor = color;
+        }
+
         public void SetPlayerTarget(PointF target)
         {
             float halfSize = PlayerEntity.PlayerSize / 2;
@@ -355,13 +361,13 @@ namespace WinFormsGame.Models
 
         private void RegisterHitFx(PlayerEntity player, Color baseColor)
         {
-            player.HitFlashColor = ColorHelper.GetHitFlashColor(baseColor, Color.FromArgb(240, 240, 240));
+            player.HitFlashColor = ColorHelper.GetHitFlashColor(baseColor, uiSurfaceColor);
             player.HitFlashUntilUtc = DateTime.UtcNow.AddSeconds(HitFlashDurationSeconds);
         }
 
         private void RegisterHitFx(MonsterEntity monster, Color baseColor)
         {
-            monster.HitFlashColor = ColorHelper.GetHitFlashColor(baseColor, Color.FromArgb(240, 240, 240));
+            monster.HitFlashColor = ColorHelper.GetHitFlashColor(baseColor, uiSurfaceColor);
             monster.HitFlashUntilUtc = DateTime.UtcNow.AddSeconds(HitFlashDurationSeconds);
         }
 
