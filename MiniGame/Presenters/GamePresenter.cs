@@ -115,5 +115,10 @@ namespace WinFormsGame.Presenters
         public string GetPlayerName() => model.Player.Name;
         public void SetPlayerName(string name) => model.Player.Name = name;
         public PlayerEntity GetPlayer() => model.Player;
+
+        public void SetUiSurfaceColor(Color color)
+        {
+            model.SetUiSurfaceColor(color);
+        }
     }
 }

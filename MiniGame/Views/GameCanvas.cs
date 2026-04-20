@@ -9,9 +9,15 @@ namespace WinFormsGame.Views
 {
     public partial class GameCanvas : UserControl
     {
+        private const double ClickIndicatorDurationSeconds = 0.25;
         private GameModel gameModel;
         private InputHandler inputHandler;
         private bool isDragging = false;
+        private PointF? clickIndicatorCenter;
+        private DateTime clickIndicatorUntilUtc = DateTime.MinValue;
+        private Color gridColor = Color.FromArgb(188, 202, 221);
+        private Color borderColor = Color.FromArgb(120, 141, 166);
+        private Color contrastHighlightColor = Color.FromArgb(28, 90, 210);
 
         public event EventHandler<Point> MapClicked;
         public event EventHandler<Point> PlayerDragStarted;
@@ -55,6 +61,7 @@ namespace WinFormsGame.Views
 
             if (e.Button == MouseButtons.Left)
             {
+                StartClickIndicator(e.Location);
                 MapClicked?.Invoke(this, e.Location);
                 return;
             }
@@ -116,18 +123,28 @@ namespace WinFormsGame.Views
             DrawMonsters(g);
             DrawPlayer(g);
             DrawPlayerName(g);
+            DrawClickIndicator(g);
+        }
+
+        public void ApplyVisualTheme(ThemeManager.ThemePalette palette)
+        {
+            gridColor = palette.CanvasGridColor;
+            borderColor = ColorHelper.GetHitFlashColor(palette.AccentColor, palette.BackColor);
+            contrastHighlightColor = palette.ContrastColor;
+            BackColor = palette.SurfaceColor;
+            Invalidate();
         }
 
         private void DrawMapGrid(Graphics g)
         {
-            using (Pen pen = new Pen(Color.FromArgb(200, 200, 200), 1))
+            using (Pen pen = new Pen(gridColor, 1))
             {
                 pen.DashStyle = DashStyle.Dot;
                 for (int x = 0; x < Width; x += 50) g.DrawLine(pen, x, 0, x, Height);
                 for (int y = 0; y < Height; y += 50) g.DrawLine(pen, 0, y, Width, y);
             }
 
-            using (Pen pen = new Pen(Color.Gray, 2))
+            using (Pen pen = new Pen(borderColor, 2))
             {
                 g.DrawRectangle(pen, 0, 0, Width - 1, Height - 1);
             }
@@ -207,7 +224,7 @@ namespace WinFormsGame.Views
 
             if (gameModel.Player.IsMoving && inputHandler.CurrentState != InputState.Dragging)
             {
-                using (Pen targetPen = new Pen(Color.FromArgb(100, 255, 255, 0), 2))
+                using (Pen targetPen = new Pen(Color.FromArgb(180, contrastHighlightColor), 2.2f))
                 {
                     targetPen.DashStyle = DashStyle.Dash;
                     g.DrawEllipse(targetPen,
@@ -216,6 +233,34 @@ namespace WinFormsGame.Views
                     size, size);
                 }
             }
+        }
+
+        private void DrawClickIndicator(Graphics g)
+        {
+            if (!clickIndicatorCenter.HasValue || DateTime.UtcNow > clickIndicatorUntilUtc)
+            {
+                clickIndicatorCenter = null;
+                return;
+            }
+
+            var totalDuration = TimeSpan.FromSeconds(ClickIndicatorDurationSeconds).TotalMilliseconds;
+            var progress = 1.0 - (clickIndicatorUntilUtc - DateTime.UtcNow).TotalMilliseconds / totalDuration;
+            progress = Math.Max(0.0, Math.Min(1.0, progress));
+            var radius = 18f + (float)(progress * 24f);
+            var alpha = (int)(160 * (1.0 - progress));
+            var center = clickIndicatorCenter.Value;
+
+            using (var ringPen = new Pen(Color.FromArgb(alpha, contrastHighlightColor), 2.3f))
+            {
+                g.DrawEllipse(ringPen, center.X - radius, center.Y - radius, radius * 2, radius * 2);
+            }
+        }
+
+        private void StartClickIndicator(Point location)
+        {
+            clickIndicatorCenter = location;
+            clickIndicatorUntilUtc = DateTime.UtcNow.AddSeconds(ClickIndicatorDurationSeconds);
+            Invalidate();
         }
 
         private void DrawHealthBar(Graphics g, float centerX, float y, float width, float height, int health, int maxHealth)
