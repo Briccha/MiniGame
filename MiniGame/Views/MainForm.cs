@@ -139,17 +139,6 @@ namespace WinFormsGame
             isUiOverlayOpen = false;
         }
 
-        private void BtnName_Click(object sender, EventArgs e)
-        {
-            isUiOverlayOpen = true;
-            string newName = ShowInputDialog("Введите имя персонажа:", "Изменение имени", presenter.GetPlayerName());
-            isUiOverlayOpen = false;
-            if (!string.IsNullOrWhiteSpace(newName))
-            {
-                presenter.SetPlayerName(newName);
-                gameCanvas.Invalidate();
-            }
-        }
 
         private string ShowInputDialog(string prompt, string title, string defaultValue)
         {
@@ -197,7 +186,7 @@ namespace WinFormsGame
         private void ConfigureTooltips()
         {
             buttonToolTip.SetToolTip(btnShop, "Открыть магазин скинов");
-            buttonToolTip.SetToolTip(btnName, "Изменить имя героя");
+
             buttonToolTip.SetToolTip(btnSettings, "Открыть настройки сложности и персонажа");
             buttonToolTip.SetToolTip(btnHelp, "Показать справку");
         }
@@ -211,6 +200,11 @@ namespace WinFormsGame
             {
                 ThemeManager.ApplyTheme(found[0], theme);
             }
+        }
+
+        private void lblDifficulty_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

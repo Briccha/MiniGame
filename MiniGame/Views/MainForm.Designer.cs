@@ -10,7 +10,6 @@ namespace WinFormsGame
         private System.Windows.Forms.Label lblBalance;
         private System.Windows.Forms.Label lblBalanceValue;
         private System.Windows.Forms.Button btnShop;
-        private System.Windows.Forms.Button btnName;
         private System.Windows.Forms.ComboBox cmbTheme;
         private System.Windows.Forms.Label lblTheme;
         //private System.Windows.Forms.Panel instructionPanel;
@@ -44,7 +43,6 @@ namespace WinFormsGame
             this.lblBalance = new System.Windows.Forms.Label();
             this.lblBalanceValue = new System.Windows.Forms.Label();
             this.btnShop = new System.Windows.Forms.Button();
-            this.btnName = new System.Windows.Forms.Button();
             this.cmbTheme = new System.Windows.Forms.ComboBox();
             this.lblTheme = new System.Windows.Forms.Label();
             this.lblDifficulty = new System.Windows.Forms.Label();
@@ -72,7 +70,6 @@ namespace WinFormsGame
             this.topPanel.Controls.Add(this.lblBalance);
             this.topPanel.Controls.Add(this.lblBalanceValue);
             this.topPanel.Controls.Add(this.btnShop);
-            this.topPanel.Controls.Add(this.btnName);
             this.topPanel.Controls.Add(this.cmbTheme);
             this.topPanel.Controls.Add(this.lblTheme);
             this.topPanel.Controls.Add(this.lblDifficulty);
@@ -85,14 +82,14 @@ namespace WinFormsGame
             this.topPanel.Location = new System.Drawing.Point(0, 0);
             this.topPanel.Margin = new System.Windows.Forms.Padding(2);
             this.topPanel.Name = "topPanel";
-            this.topPanel.Size = new System.Drawing.Size(978, 41);
+            this.topPanel.Size = new System.Drawing.Size(978, 47);
             this.topPanel.TabIndex = 0;
             // 
             // lblBalance
             // 
             this.lblBalance.AutoSize = true;
             this.lblBalance.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.lblBalance.Location = new System.Drawing.Point(9, 11);
+            this.lblBalance.Location = new System.Drawing.Point(3, 24);
             this.lblBalance.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblBalance.Name = "lblBalance";
             this.lblBalance.Size = new System.Drawing.Size(78, 21);
@@ -103,7 +100,7 @@ namespace WinFormsGame
             // 
             this.lblBalanceValue.AutoSize = true;
             this.lblBalanceValue.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.lblBalanceValue.Location = new System.Drawing.Point(91, 12);
+            this.lblBalanceValue.Location = new System.Drawing.Point(85, 26);
             this.lblBalanceValue.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblBalanceValue.Name = "lblBalanceValue";
             this.lblBalanceValue.Size = new System.Drawing.Size(19, 21);
@@ -114,7 +111,7 @@ namespace WinFormsGame
             // 
             this.btnShop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnShop.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.btnShop.Location = new System.Drawing.Point(250, 6);
+            this.btnShop.Location = new System.Drawing.Point(478, 9);
             this.btnShop.Margin = new System.Windows.Forms.Padding(2);
             this.btnShop.Name = "btnShop";
             this.btnShop.Size = new System.Drawing.Size(104, 29);
@@ -123,19 +120,7 @@ namespace WinFormsGame
             this.btnShop.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnShop.UseVisualStyleBackColor = true;
             this.btnShop.Click += new System.EventHandler(this.BtnShop_Click);
-            // 
-            // btnName
-            // 
-            this.btnName.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnName.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.btnName.Location = new System.Drawing.Point(358, 7);
-            this.btnName.Margin = new System.Windows.Forms.Padding(2);
-            this.btnName.Name = "btnName";
-            this.btnName.Size = new System.Drawing.Size(74, 29);
-            this.btnName.TabIndex = 5;
-            this.btnName.Text = "✏️ Имя";
-            this.btnName.UseVisualStyleBackColor = true;
-            this.btnName.Click += new System.EventHandler(this.BtnName_Click);
+
             // 
             // cmbTheme
             // 
@@ -147,7 +132,7 @@ namespace WinFormsGame
             "Светлая",
             "Темная",
             "Системная"});
-            this.cmbTheme.Location = new System.Drawing.Point(799, 9);
+            this.cmbTheme.Location = new System.Drawing.Point(802, 21);
             this.cmbTheme.Margin = new System.Windows.Forms.Padding(2);
             this.cmbTheme.Name = "cmbTheme";
             this.cmbTheme.Size = new System.Drawing.Size(91, 25);
@@ -159,7 +144,7 @@ namespace WinFormsGame
             this.lblTheme.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblTheme.AutoSize = true;
             this.lblTheme.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblTheme.Location = new System.Drawing.Point(752, 12);
+            this.lblTheme.Location = new System.Drawing.Point(824, 0);
             this.lblTheme.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblTheme.Name = "lblTheme";
             this.lblTheme.Size = new System.Drawing.Size(43, 19);
@@ -170,19 +155,21 @@ namespace WinFormsGame
             // 
             this.lblDifficulty.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblDifficulty.AutoSize = true;
+            this.lblDifficulty.BackColor = System.Drawing.Color.Transparent;
             this.lblDifficulty.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblDifficulty.Location = new System.Drawing.Point(563, 13);
+            this.lblDifficulty.Location = new System.Drawing.Point(707, 0);
             this.lblDifficulty.Name = "lblDifficulty";
             this.lblDifficulty.Size = new System.Drawing.Size(81, 19);
             this.lblDifficulty.TabIndex = 6;
             this.lblDifficulty.Text = "Сложность:";
+            this.lblDifficulty.Click += new System.EventHandler(this.lblDifficulty_Click);
             // 
             // cmbDifficulty
             // 
             this.cmbDifficulty.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbDifficulty.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbDifficulty.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cmbDifficulty.Location = new System.Drawing.Point(648, 10);
+            this.cmbDifficulty.Location = new System.Drawing.Point(697, 21);
             this.cmbDifficulty.Name = "cmbDifficulty";
             this.cmbDifficulty.Size = new System.Drawing.Size(100, 25);
             this.cmbDifficulty.TabIndex = 7;
@@ -195,7 +182,7 @@ namespace WinFormsGame
             this.btnHelp.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnHelp.Location = new System.Drawing.Point(899, 7);
             this.btnHelp.Name = "btnHelp";
-            this.btnHelp.Size = new System.Drawing.Size(32, 29);
+            this.btnHelp.Size = new System.Drawing.Size(32, 32);
             this.btnHelp.TabIndex = 8;
             this.btnHelp.Text = "❓";
             this.btnHelp.UseVisualStyleBackColor = true;
@@ -206,9 +193,9 @@ namespace WinFormsGame
             this.btnSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSettings.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.btnSettings.Location = new System.Drawing.Point(937, 6);
+            this.btnSettings.Location = new System.Drawing.Point(937, 7);
             this.btnSettings.Name = "btnSettings";
-            this.btnSettings.Size = new System.Drawing.Size(38, 30);
+            this.btnSettings.Size = new System.Drawing.Size(32, 32);
             this.btnSettings.TabIndex = 9;
             this.btnSettings.Text = "⚙ Настройки";
             this.btnSettings.UseVisualStyleBackColor = true;
@@ -218,7 +205,7 @@ namespace WinFormsGame
             // 
             this.lblHp.AutoSize = true;
             this.lblHp.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.lblHp.Location = new System.Drawing.Point(120, 11);
+            this.lblHp.Location = new System.Drawing.Point(3, 0);
             this.lblHp.Name = "lblHp";
             this.lblHp.Size = new System.Drawing.Size(36, 21);
             this.lblHp.TabIndex = 2;
@@ -228,7 +215,7 @@ namespace WinFormsGame
             // 
             this.lblHpValue.AutoSize = true;
             this.lblHpValue.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.lblHpValue.Location = new System.Drawing.Point(159, 12);
+            this.lblHpValue.Location = new System.Drawing.Point(45, 0);
             this.lblHpValue.Name = "lblHpValue";
             this.lblHpValue.Size = new System.Drawing.Size(34, 21);
             this.lblHpValue.TabIndex = 3;
@@ -268,10 +255,10 @@ namespace WinFormsGame
             // 
             this.gameCanvas.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
             this.gameCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gameCanvas.Location = new System.Drawing.Point(0, 41);
+            this.gameCanvas.Location = new System.Drawing.Point(0, 47);
             this.gameCanvas.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.gameCanvas.Name = "gameCanvas";
-            this.gameCanvas.Size = new System.Drawing.Size(978, 447);
+            this.gameCanvas.Size = new System.Drawing.Size(978, 441);
             this.gameCanvas.TabIndex = 2;
             // 
             // MainForm
