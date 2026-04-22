@@ -8,9 +8,10 @@ namespace WinFormsGame.Models
     public class GameModel
     {
         private const double AttackCooldownSeconds = 1.0;
-        private const double HitFlashDurationSeconds = 0.20;
+        private const double HitFlashDurationSeconds = 0.30;
         private readonly Random random = new Random();
         private Color uiSurfaceColor = Color.FromArgb(242, 245, 250);
+        private Color uiDamageFlashColor = Color.FromArgb(210, 74, 74);
 
         public PlayerEntity Player { get; set; }
         public List<CollectibleItem> Items { get; set; }
@@ -128,8 +129,8 @@ namespace WinFormsGame.Models
                 {
                     monster.Health -= Player.AttackPower;
                     Player.LastAttackTimeUtc = now;
-                    RegisterHitFx(Player, Color.DodgerBlue);
-                    RegisterHitFx(monster, Color.IndianRed);
+                    RegisterHitFx(Player, uiDamageFlashColor);
+                    RegisterHitFx(monster, ColorHelper.Blend(uiDamageFlashColor, Color.IndianRed, 0.55));
                     SoundEffectPlayer.PlayHitSound();
                 }
 
@@ -137,8 +138,8 @@ namespace WinFormsGame.Models
                 {
                     Player.Health -= monster.AttackPower;
                     monster.LastAttackTimeUtc = now;
-                    RegisterHitFx(Player, Color.DodgerBlue);
-                    RegisterHitFx(monster, Color.IndianRed);
+                    RegisterHitFx(Player, uiDamageFlashColor);
+                    RegisterHitFx(monster, ColorHelper.Blend(uiDamageFlashColor, Color.IndianRed, 0.55));
                     SoundEffectPlayer.PlayHitSound();
                     OnPlayerStateChanged();
                 }
@@ -247,6 +248,11 @@ namespace WinFormsGame.Models
         public void SetUiSurfaceColor(Color color)
         {
             uiSurfaceColor = color;
+        }
+
+        public void SetUiDamageFlashColor(Color color)
+        {
+            uiDamageFlashColor = color;
         }
 
         public void SetPlayerTarget(PointF target)

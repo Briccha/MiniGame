@@ -120,5 +120,10 @@ namespace WinFormsGame.Presenters
         {
             model.SetUiSurfaceColor(color);
         }
+
+        public void SetUiDamageFlashColor(Color color)
+        {
+            model.SetUiDamageFlashColor(color);
+        }
     }
 }

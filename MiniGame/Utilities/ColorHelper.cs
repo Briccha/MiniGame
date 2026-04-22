@@ -4,17 +4,31 @@ namespace WinFormsGame.Utilities
 {
     public static class ColorHelper
     {
+        public static Color Blend(Color first, Color second, double amount)
+        {
+            var clamped = System.Math.Max(0.0, System.Math.Min(1.0, amount));
+            var inverse = 1.0 - clamped;
+            return Color.FromArgb(
+                (int)(first.R * inverse + second.R * clamped),
+                (int)(first.G * inverse + second.G * clamped),
+                (int)(first.B * inverse + second.B * clamped));
+        }
+
         public static Color GetHitFlashColor(Color baseColor, Color backgroundColor)
         {
-            var inverted = Color.FromArgb(255 - baseColor.R, 255 - baseColor.G, 255 - baseColor.B);
-            var contrastWithBackground = Contrast(inverted, backgroundColor);
-            var contrastWithBase = Contrast(inverted, baseColor);
+            var preferredContrast = GetPreferredContrastColor(baseColor, backgroundColor);
+            var softened = Blend(preferredContrast, baseColor, 0.35);
 
-            if (contrastWithBackground >= 3.0 && contrastWithBase >= 2.0)
+            if (Contrast(softened, backgroundColor) >= 3.0)
             {
-                return inverted;
+                return softened;
             }
 
+            return preferredContrast;
+        }
+
+        public static Color GetPreferredContrastColor(Color baseColor, Color backgroundColor)
+        {
             var whiteScore = Contrast(Color.White, backgroundColor) + Contrast(Color.White, baseColor);
             var blackScore = Contrast(Color.Black, backgroundColor) + Contrast(Color.Black, baseColor);
             return whiteScore >= blackScore ? Color.White : Color.Black;

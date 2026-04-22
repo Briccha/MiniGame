@@ -22,6 +22,7 @@ namespace WinFormsGame.Utilities
             public Color SurfaceColor;
             public Color CanvasGridColor;
             public Color ContrastColor;
+            public Color DamageFlashColor;
         }
 
         public static bool IsSystemDarkTheme()
@@ -61,7 +62,8 @@ namespace WinFormsGame.Utilities
                     AccentColor = Color.FromArgb(56, 68, 82),
                     SurfaceColor = Color.FromArgb(31, 37, 45),
                     CanvasGridColor = Color.FromArgb(72, 82, 94),
-                    ContrastColor = Color.FromArgb(255, 214, 102)
+                    ContrastColor = Color.FromArgb(255, 214, 102),
+                    DamageFlashColor = Color.FromArgb(255, 164, 120)
                 };
             }
 
@@ -72,7 +74,8 @@ namespace WinFormsGame.Utilities
                 AccentColor = Color.FromArgb(214, 224, 238),
                 SurfaceColor = Color.White,
                 CanvasGridColor = Color.FromArgb(188, 202, 221),
-                ContrastColor = Color.FromArgb(28, 90, 210)
+                ContrastColor = Color.FromArgb(28, 90, 210),
+                DamageFlashColor = Color.FromArgb(210, 74, 74)
             };
         }
 

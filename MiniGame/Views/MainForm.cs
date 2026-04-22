@@ -407,6 +407,7 @@ namespace WinFormsGame
 
             gameCanvas.ApplyVisualTheme(palette);
             presenter?.SetUiSurfaceColor(palette.SurfaceColor);
+            presenter?.SetUiDamageFlashColor(palette.DamageFlashColor);
         }
     }
 }

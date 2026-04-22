@@ -9,7 +9,7 @@ namespace WinFormsGame.Views
 {
     public partial class GameCanvas : UserControl
     {
-        private const double ClickIndicatorDurationSeconds = 0.25;
+        private const double ClickIndicatorDurationSeconds = 0.40;
         private GameModel gameModel;
         private InputHandler inputHandler;
         private bool isDragging = false;
@@ -130,7 +130,7 @@ namespace WinFormsGame.Views
         {
             gridColor = palette.CanvasGridColor;
             borderColor = ColorHelper.GetHitFlashColor(palette.AccentColor, palette.BackColor);
-            contrastHighlightColor = palette.ContrastColor;
+            contrastHighlightColor = ColorHelper.GetPreferredContrastColor(palette.ContrastColor, palette.SurfaceColor);
             BackColor = palette.SurfaceColor;
             Invalidate();
         }
@@ -180,7 +180,9 @@ namespace WinFormsGame.Views
                     g.FillEllipse(shadow, monster.Bounds.X + 2, monster.Bounds.Y + 2, monster.Bounds.Width, monster.Bounds.Height);
                 }
 
-                var bodyColor = monster.IsHitFlashActive ? monster.HitFlashColor : Color.IndianRed;
+                var bodyColor = monster.IsHitFlashActive
+                    ? ColorHelper.Blend(Color.IndianRed, monster.HitFlashColor, 0.55)
+                    : Color.IndianRed;
                 using (Brush body = new SolidBrush(bodyColor))
                 {
                     g.FillEllipse(body, monster.Bounds);
@@ -204,7 +206,9 @@ namespace WinFormsGame.Views
                 g.FillEllipse(shadowBrush, x + 3, y + 3, size, size);
             }
 
-            var playerPrimary = gameModel.Player.IsHitFlashActive ? gameModel.Player.HitFlashColor : currentSkin.PrimaryColor;
+            var playerPrimary = gameModel.Player.IsHitFlashActive
+                ? ColorHelper.Blend(currentSkin.PrimaryColor, gameModel.Player.HitFlashColor, 0.5)
+                : currentSkin.PrimaryColor;
             var playerSecondary = gameModel.Player.IsHitFlashActive
                 ? ColorHelper.GetHitFlashColor(currentSkin.SecondaryColor, playerPrimary)
                 : currentSkin.SecondaryColor;
@@ -247,7 +251,8 @@ namespace WinFormsGame.Views
             var progress = 1.0 - (clickIndicatorUntilUtc - DateTime.UtcNow).TotalMilliseconds / totalDuration;
             progress = Math.Max(0.0, Math.Min(1.0, progress));
             var radius = 18f + (float)(progress * 24f);
-            var alpha = (int)(160 * (1.0 - progress));
+            var easedFade = 1.0 - Math.Pow(progress, 1.6);
+            var alpha = (int)(110 * (1.0 - easedFade));
             var center = clickIndicatorCenter.Value;
 
             using (var ringPen = new Pen(Color.FromArgb(alpha, contrastHighlightColor), 2.3f))
