@@ -214,7 +214,9 @@ namespace WinFormsGame.Views
 
             if (gameModel.Player.IsMoving && inputHandler.CurrentState != InputState.Dragging)
             {
-                using (Pen targetPen = new Pen(Color.FromArgb(100, 255, 255, 0), 2))
+                var backgroundColor = BackColor.IsEmpty ? Color.White : BackColor;
+                var targetColor = ColorHelper.GetTargetIndicatorColor(backgroundColor);
+                using (Pen targetPen = new Pen(Color.FromArgb(150, targetColor), 2))
                 {
                     targetPen.DashStyle = DashStyle.Dash;
                     g.DrawEllipse(targetPen,
