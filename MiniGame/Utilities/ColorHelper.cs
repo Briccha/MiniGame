@@ -4,6 +4,13 @@ namespace WinFormsGame.Utilities
 {
     public static class ColorHelper
     {
+        public static Color GetThemeContrastColor(Color backgroundColor)
+        {
+            return Contrast(Color.White, backgroundColor) >= Contrast(Color.Black, backgroundColor)
+                ? Color.White
+                : Color.Black;
+        }
+
         public static Color GetHitFlashColor(Color baseColor, Color backgroundColor)
         {
             var inverted = Color.FromArgb(255 - baseColor.R, 255 - baseColor.G, 255 - baseColor.B);

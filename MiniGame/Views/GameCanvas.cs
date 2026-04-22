@@ -9,9 +9,14 @@ namespace WinFormsGame.Views
 {
     public partial class GameCanvas : UserControl
     {
+        private const double ClickIndicatorDurationSeconds = 0.35;
+        private const double DragIndicatorDurationSeconds = 0.15;
+
         private GameModel gameModel;
         private InputHandler inputHandler;
         private bool isDragging = false;
+        private DateTime clickIndicatorUntilUtc = DateTime.MinValue;
+        private DateTime dragIndicatorUntilUtc = DateTime.MinValue;
 
         public event EventHandler<Point> MapClicked;
         public event EventHandler<Point> PlayerDragStarted;
@@ -55,7 +60,9 @@ namespace WinFormsGame.Views
 
             if (e.Button == MouseButtons.Left)
             {
+                clickIndicatorUntilUtc = DateTime.UtcNow.AddSeconds(ClickIndicatorDurationSeconds);
                 MapClicked?.Invoke(this, e.Location);
+                Invalidate();
                 return;
             }
 
@@ -86,6 +93,7 @@ namespace WinFormsGame.Views
         {
             if (isDragging && gameModel != null)
             {
+                dragIndicatorUntilUtc = DateTime.UtcNow.AddSeconds(DragIndicatorDurationSeconds);
                 PlayerDragged?.Invoke(this, e.Location);
                 Invalidate();
             }
@@ -187,10 +195,8 @@ namespace WinFormsGame.Views
                 g.FillEllipse(shadowBrush, x + 3, y + 3, size, size);
             }
 
-            var playerPrimary = gameModel.Player.IsHitFlashActive ? gameModel.Player.HitFlashColor : currentSkin.PrimaryColor;
-            var playerSecondary = gameModel.Player.IsHitFlashActive
-                ? ColorHelper.GetHitFlashColor(currentSkin.SecondaryColor, playerPrimary)
-                : currentSkin.SecondaryColor;
+            var playerPrimary = currentSkin.PrimaryColor;
+            var playerSecondary = currentSkin.SecondaryColor;
 
             using (Brush playerBrush = new SolidBrush(playerPrimary))
             {
@@ -203,6 +209,7 @@ namespace WinFormsGame.Views
             }
 
             DrawPlayerEyes(g, x, y, size);
+            DrawPlayerInteractionRing(g, x, y, size, playerPrimary);
             DrawHealthBar(g, gameModel.Player.Position.X, y - 8, 46, 6, gameModel.Player.Health, gameModel.Player.MaxHealth);
 
             if (gameModel.Player.IsMoving && inputHandler.CurrentState != InputState.Dragging)
@@ -216,6 +223,66 @@ namespace WinFormsGame.Views
                     size, size);
                 }
             }
+        }
+
+        private void DrawPlayerInteractionRing(Graphics g, float x, float y, float size, Color playerColor)
+        {
+            var now = DateTime.UtcNow;
+            var ringIntensity = 0.0;
+
+            if (gameModel.Player.IsMoving || isDragging)
+            {
+                ringIntensity = Math.Max(ringIntensity, 0.55);
+            }
+
+            if (now < clickIndicatorUntilUtc)
+            {
+                ringIntensity = Math.Max(ringIntensity, RemainingRatio(now, clickIndicatorUntilUtc, ClickIndicatorDurationSeconds) * 0.65);
+            }
+
+            if (now < dragIndicatorUntilUtc)
+            {
+                ringIntensity = Math.Max(ringIntensity, RemainingRatio(now, dragIndicatorUntilUtc, DragIndicatorDurationSeconds) * 0.6);
+            }
+
+            if (gameModel.Player.IsHitFlashActive)
+            {
+                ringIntensity = Math.Max(ringIntensity, 0.8);
+            }
+
+            if (ringIntensity <= 0.01)
+            {
+                return;
+            }
+
+            var backgroundColor = BackColor.IsEmpty ? Color.White : BackColor;
+            var contrastColor = ColorHelper.GetThemeContrastColor(backgroundColor);
+            var ringColor = Color.FromArgb((int)(Math.Max(40, Math.Min(220, ringIntensity * 255))), contrastColor);
+
+            using (var ringPen = new Pen(ringColor, 3f))
+            {
+                g.DrawEllipse(ringPen, x - 5, y - 5, size + 10, size + 10);
+            }
+
+            if (gameModel.Player.IsHitFlashActive)
+            {
+                var secondaryColor = ColorHelper.GetHitFlashColor(playerColor, backgroundColor);
+                using (var accentPen = new Pen(Color.FromArgb(120, secondaryColor), 2f))
+                {
+                    g.DrawEllipse(accentPen, x - 9, y - 9, size + 18, size + 18);
+                }
+            }
+        }
+
+        private static double RemainingRatio(DateTime nowUtc, DateTime finishUtc, double durationSeconds)
+        {
+            if (durationSeconds <= 0)
+            {
+                return 0;
+            }
+
+            var remaining = (finishUtc - nowUtc).TotalSeconds;
+            return Math.Max(0, Math.Min(1, remaining / durationSeconds));
         }
 
         private void DrawHealthBar(Graphics g, float centerX, float y, float width, float height, int health, int maxHealth)
